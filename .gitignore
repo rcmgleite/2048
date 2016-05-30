@@ -1,0 +1,5 @@
+*.o
+*.d
+game
+.ycm_extra_conf.pyc
+.ycm_extra_conf.py
