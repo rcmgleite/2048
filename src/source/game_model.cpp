@@ -1,11 +1,14 @@
 #include<random>
 
 #include "game_model.hpp"
+#include "board.hpp"
 
 static const int BOARD_SIZE = 4;
 static const int EMPTY_SLOT = 0;
 
-game_model::game_model() : _board(BOARD_SIZE), _score(0), _state(CONTINUE) {
+using std::shared_ptr;
+
+game_model::game_model() : _board(std::make_shared<class board>(BOARD_SIZE)), _score(0), _state(CONTINUE) {
 	insert_random();
 	insert_random();
 } 
@@ -24,27 +27,27 @@ void game_model::move_right() {
 }
 
 void game_model::move_left() {
-	_board.rotate_90_clockwise();
-	_board.rotate_90_clockwise();
+	_board->rotate_90_clockwise();
+	_board->rotate_90_clockwise();
 	move_right();
-	_board.rotate_90_clockwise();
-	_board.rotate_90_clockwise();
+	_board->rotate_90_clockwise();
+	_board->rotate_90_clockwise();
 }
 
 void game_model::move_up() {
-	_board.rotate_90_clockwise();
+	_board->rotate_90_clockwise();
 	move_right();
-	_board.rotate_90_clockwise();
-	_board.rotate_90_clockwise();
-	_board.rotate_90_clockwise();
+	_board->rotate_90_clockwise();
+	_board->rotate_90_clockwise();
+	_board->rotate_90_clockwise();
 }
 
 void game_model::move_down() {
-	_board.rotate_90_clockwise();
-	_board.rotate_90_clockwise();
-	_board.rotate_90_clockwise();
+	_board->rotate_90_clockwise();
+	_board->rotate_90_clockwise();
+	_board->rotate_90_clockwise();
 	move_right();
-	_board.rotate_90_clockwise();
+	_board->rotate_90_clockwise();
 }
 
 /*
@@ -62,7 +65,7 @@ int game_model::state() {
 	return _state;
 }
 
-iboard& game_model::board() {
+shared_ptr<iboard> game_model::board() {
 	return _board;
 }
 
@@ -78,8 +81,8 @@ void game_model::insert_random() {
 	while(true) {
 		int i = dist(mt);
 		int j = dist(mt);
-		if(_board.get(i, j) == 0) {
-			_board.set(i, j, 2); //FIXME - insert 2 or 4 
+		if(_board->get(i, j) == 0) {
+			_board->set(i, j, 2); //FIXME - insert 2 or 4 
 			return;
 		}
 	}
@@ -93,7 +96,7 @@ void game_model::shift_row_right(int row) { // FIXME... too many branches
 		/*
 		 *	Finds the next empty slot
 		 */
-		while(blank_flag >= 0 && _board.get(row, blank_flag) != EMPTY_SLOT) {
+		while(blank_flag >= 0 && _board->get(row, blank_flag) != EMPTY_SLOT) {
 			blank_flag--;
 		}
 
@@ -104,11 +107,11 @@ void game_model::shift_row_right(int row) { // FIXME... too many branches
 		 *	From the empty slot on, try to find an item to be moved
 		 */
 		int walker = blank_flag - 1;
-		while(_board.get(row, walker) == EMPTY_SLOT && walker > 0)
+		while(_board->get(row, walker) == EMPTY_SLOT && walker > 0)
 			walker--;
 
-		_board.set(row, blank_flag, _board.get(row, walker));
-		_board.set(row, walker, EMPTY_SLOT);
+		_board->set(row, blank_flag, _board->get(row, walker));
+		_board->set(row, walker, EMPTY_SLOT);
 
 		if(walker == 0)
 			return;
@@ -122,11 +125,11 @@ void game_model::shift_row_right(int row) { // FIXME... too many branches
  */
 void game_model::merge_row_right(int row) {
 	for(int i = BOARD_SIZE - 1; i >= 1; i--) {
-		if((_board.get(row, i) == _board.get(row, i - 1)) && _board.get(row, i) != EMPTY_SLOT) {
-			int new_value = _board.get(row, i);
+		if((_board->get(row, i) == _board->get(row, i - 1)) && _board->get(row, i) != EMPTY_SLOT) {
+			int new_value = _board->get(row, i);
 			_score += new_value;
-			_board.set(row, i, new_value * 2);
-			_board.set(row, i - 1, EMPTY_SLOT);
+			_board->set(row, i, new_value * 2);
+			_board->set(row, i - 1, EMPTY_SLOT);
 		}
 	}
 }
@@ -135,7 +138,7 @@ void game_model::update_state() {
 	int counter = 0;
 	for(int i = 0; i < BOARD_SIZE; i++) {
 		for(int j = 0; j < BOARD_SIZE; j++) {
-			auto elem = _board.get(i, j);
+			auto elem = _board->get(i, j);
 			if(elem != 0) {
 				counter++;
 				if(elem == 2048) {

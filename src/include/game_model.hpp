@@ -2,6 +2,7 @@
 #define GAME_MODEL_HPP
 
 #include"board.hpp"
+#include<memory>
 
 enum GAME_STATES {
 	WON,
@@ -11,6 +12,7 @@ enum GAME_STATES {
 
 class game_model {
 public:
+	using board_t = class iboard;
 	game_model();
 
 	/*
@@ -27,11 +29,10 @@ public:
 	 */
 	int score();
 	int state();
-	iboard& board();
+  std::shared_ptr<board_t> board();
 
 private:
-	using board_t = class board;
-	board_t _board;
+  std::shared_ptr<board_t> _board;
 	int _score;
 	int _state;
 

@@ -25,7 +25,7 @@ public:
 	/*
 	 *	Helpers
 	 */
-	void rotate_90_clockwise();
+	virtual void rotate_90_clockwise();
 	void print();
 
 private:

@@ -24,9 +24,9 @@ static string format_width(int value) {
 void stdout_renderer::draw() {
 	cout << "\e[1;1H\e[2J";
 	cout << "Score: " << _gm.score() << endl;
-	for(int i = 0; i < _gm.board().size(); i++) {
-		for(int j = 0; j < _gm.board().size(); j++) {
-			cout << format_width(_gm.board().get(i, j)) << " ";
+	for(int i = 0; i < _gm.board()->size(); i++) {
+		for(int j = 0; j < _gm.board()->size(); j++) {
+			cout << format_width(_gm.board()->get(i, j)) << " ";
 		}
 		cout << endl;
 	}
